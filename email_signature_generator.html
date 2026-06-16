@@ -97,3 +97,575 @@
       font-size: 16px;
       margin-bottom: 16px;
     }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(280px, 390px) 1fr;
+      gap: 24px;
+      margin-top: 24px;
+      align-items: start;
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    label:first-of-type {
+      margin-top: 0;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"],
+    textarea {
+      width: 100%;
+      margin-top: 6px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--surface);
+      color: var(--ink);
+      font: inherit;
+    }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="url"] {
+      height: 40px;
+      padding: 8px 10px;
+    }
+
+    textarea {
+      min-height: 300px;
+      padding: 12px;
+      resize: vertical;
+      font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .hint {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 16px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .check-row input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--accent);
+    }
+
+    .button-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    button {
+      min-height: 38px;
+      border: 1px solid var(--accent);
+      border-radius: 6px;
+      background: var(--accent);
+      color: var(--storm-slate);
+      padding: 8px 14px;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: transparent;
+      color: var(--accent-strong);
+    }
+
+    button:hover {
+      filter: brightness(0.94);
+    }
+
+    .workspace {
+      display: grid;
+      gap: 24px;
+    }
+
+    .preview-window {
+      min-height: 260px;
+      overflow: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--stone-white);
+      padding: 22px;
+    }
+
+    .preview-window.preview-dark {
+      background: var(--storm-slate);
+    }
+
+    .status {
+      min-height: 20px;
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .status.error {
+      color: var(--danger);
+    }
+
+    @media (max-width: 820px) {
+      .page {
+        width: min(100% - 24px, 620px);
+        padding-top: 20px;
+      }
+
+      .masthead,
+      .brand {
+        align-items: flex-start;
+      }
+
+      .masthead {
+        flex-direction: column;
+      }
+
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .brand-mark {
+        width: 190px;
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="masthead">
+      <div class="brand">
+        <img class="brand-mark" id="brandMark" src="https://staging.ai-terrain.ai/wp-content/uploads/2026/06/AiTerrain_01_WordmarkIcon_Horizontal_Full-ColourDark-07.svg" alt="AI Terrain">
+        <h1>Email Signature Generator</h1>
+      </div>
+      <button class="secondary" type="button" id="darkModeButton">Toggle Dark Mode</button>
+    </header>
+
+    <section class="layout" aria-label="Signature generator">
+      <form class="panel" id="signatureForm">
+        <h2>Details</h2>
+
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="fullName" autocomplete="name" placeholder="Jane Smith">
+
+        <label for="jobTitle">Job Title</label>
+        <input type="text" id="jobTitle" name="jobTitle" autocomplete="organization-title" placeholder="Partner">
+
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" autocomplete="email" placeholder="jane.smith@ai-terrain.ai">
+
+        <label for="meetingLink">Meeting Link</label>
+        <input type="url" id="meetingLink" name="meetingLink" placeholder="https://meetings.hubspot.com/jane-smith">
+        <small class="hint">Optional booking link.</small>
+
+        <label for="linkedinProfile">LinkedIn Profile URL</label>
+        <input type="url" id="linkedinProfile" name="linkedinProfile" placeholder="https://www.linkedin.com/in/jane-smith">
+        <small class="hint">Optional individual LinkedIn profile link.</small>
+
+        <div class="button-row">
+          <button type="submit">Generate Signature</button>
+          <button class="secondary" type="button" id="clearButton">Clear Fields</button>
+        </div>
+
+        <p class="status" id="status" aria-live="polite"></p>
+      </form>
+
+      <div class="workspace">
+        <section class="panel" aria-label="Generated HTML">
+          <h2>Generated HTML Code</h2>
+          <textarea id="output" readonly spellcheck="false"></textarea>
+          <div class="button-row">
+            <button type="button" id="copySignatureButton">Copy Signature</button>
+            <button class="secondary" type="button" id="copyHtmlButton">Copy HTML</button>
+            <button class="secondary" type="button" id="downloadButton">Download .html</button>
+          </div>
+        </section>
+
+        <section class="panel" aria-label="Signature preview">
+          <h2>Signature Preview</h2>
+          <div class="preview-window" id="previewWindow"></div>
+          <div class="button-row">
+            <button class="secondary" type="button" id="previewModeButton">Toggle Preview Dark Mode</button>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const BRAND = {
+      wordmarkDarkUrl: "https://staging.ai-terrain.ai/wp-content/uploads/2026/06/AiTerrain_01_WordmarkIcon_Horizontal_Full-ColourDark-07.svg",
+      wordmarkLightUrl: "https://staging.ai-terrain.ai/wp-content/uploads/2026/06/AiTerrain_01_WordmarkIcon_Horizontal_Full-Colour-Light-08.svg",
+      websiteUrl: "https://ai-terrain.ai",
+      websiteDisplay: "ai-terrain.ai",
+      privacyUrl: "https://ai-terrain.ai/privacy-policy"
+    };
+
+    const COLOURS = {
+      stormSlate: "#2B2D35",
+      stoneWhite: "#F5F3EE",
+      fellViolet: "#4A4560",
+      mist: "#8890A0",
+      moorlandAmber: "#C89030",
+      amberDark: "#8A6010",
+      sageFell: "#6B8A6F"
+    };
+
+    const STORAGE_KEY = "aiTerrainSignatureFields";
+    const FORM_IDS = ["fullName", "jobTitle", "email", "meetingLink", "linkedinProfile"];
+
+    const elements = {};
+
+    function escapeHtml(value) {
+      return String(value || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#39;");
+    }
+
+    function normaliseHttpUrl(value) {
+      const trimmed = String(value || "").trim();
+      if (!trimmed) return "";
+
+      const candidate = /^[a-z][a-z0-9+.-]*:/i.test(trimmed) ? trimmed : `https://${trimmed}`;
+
+      try {
+        const url = new URL(candidate);
+        if (url.protocol !== "https:" && url.protocol !== "http:") return "";
+        return url.href;
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function normaliseLinkedInUrl(value) {
+      const url = normaliseHttpUrl(value);
+      if (!url) return "";
+
+      try {
+        const parsed = new URL(url);
+        const hostname = parsed.hostname.toLowerCase();
+        if (hostname === "linkedin.com" || hostname.endsWith(".linkedin.com")) {
+          return parsed.href;
+        }
+      } catch (error) {
+        return "";
+      }
+
+      return "";
+    }
+
+    function getFormData() {
+      return {
+        fullName: elements.fullName.value.trim(),
+        jobTitle: elements.jobTitle.value.trim(),
+        email: elements.email.value.trim(),
+        meetingLink: elements.meetingLink.value.trim(),
+        linkedinProfile: elements.linkedinProfile.value.trim()
+      };
+    }
+
+    function saveForm() {
+      const formData = getFormData();
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+    }
+
+    function loadForm() {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      if (!stored) return;
+
+      try {
+        const formData = JSON.parse(stored);
+        FORM_IDS.forEach((id) => {
+          if (!(id in formData) || !elements[id]) return;
+          if (elements[id].type === "checkbox") {
+            elements[id].checked = Boolean(formData[id]);
+          } else {
+            elements[id].value = formData[id] || "";
+          }
+        });
+      } catch (error) {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    }
+
+    function updateAppBrandMark() {
+      const brandMark = document.getElementById("brandMark");
+      if (!brandMark) return;
+
+      brandMark.src = document.body.classList.contains("dark-mode")
+        ? BRAND.wordmarkLightUrl
+        : BRAND.wordmarkDarkUrl;
+    }
+
+    function isPreviewDarkMode() {
+      return Boolean(elements.previewWindow && elements.previewWindow.classList.contains("preview-dark"));
+    }
+
+    function buildSignatureHtml(options = {}) {
+      const isDarkSignature = Boolean(options.dark);
+      const formData = getFormData();
+      const name = escapeHtml(formData.fullName);
+      const title = escapeHtml(formData.jobTitle);
+      const email = escapeHtml(formData.email);
+      const emailHref = escapeHtml(formData.email);
+      const meetingUrl = normaliseHttpUrl(formData.meetingLink);
+      const linkedinUrl = normaliseLinkedInUrl(formData.linkedinProfile);
+      const textColour = isDarkSignature ? COLOURS.stoneWhite : COLOURS.stormSlate;
+      const linkColour = isDarkSignature ? COLOURS.moorlandAmber : COLOURS.amberDark;
+      const socialColour = COLOURS.moorlandAmber;
+      const disclaimerColour = isDarkSignature ? COLOURS.stoneWhite : COLOURS.fellViolet;
+      const wordmarkUrl = isDarkSignature ? BRAND.wordmarkLightUrl : BRAND.wordmarkDarkUrl;
+      const labelStyle = `padding:0 8px 3px 0; vertical-align:top; white-space:nowrap; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:16px; font-weight:bold; color:${textColour};`;
+      const valueStyle = `padding:0 0 3px 0; vertical-align:top; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:16px; color:${textColour};`;
+      const disclaimerStyle = `padding:14px 0 0 0; font-family:Arial, Helvetica, sans-serif; font-size:8px; line-height:11px; color:${disclaimerColour}; text-align:left;`;
+
+      const nameBlock = [
+        name ? `<span style="font-size:14px; line-height:18px; color:${textColour};">${name}</span>` : "",
+        title ? `<span style="font-size:14px; line-height:18px; color:${textColour};">${title}</span>` : ""
+      ].filter(Boolean).join("<br>");
+
+      const emailRow = email
+        ? `<tr>
+          <td style="${labelStyle}">E:</td>
+          <td style="${valueStyle}"><a href="mailto:${emailHref}" style="color:${linkColour}; text-decoration:underline;">${email}</a></td>
+        </tr>`
+        : "";
+
+      const meetingRow = meetingUrl
+        ? `<tr>
+          <td style="${labelStyle}">Book a meeting:</td>
+          <td style="${valueStyle}"><a href="${escapeHtml(meetingUrl)}" target="_blank" style="color:${linkColour}; text-decoration:underline;">${escapeHtml(meetingUrl)}</a></td>
+        </tr>`
+        : "";
+
+      const linkedinRow = linkedinUrl
+        ? `<tr>
+          <td style="${labelStyle}">LinkedIn:</td>
+          <td style="${valueStyle}">
+            <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse;">
+              <tr>
+                <td bgcolor="${socialColour}" style="width:20px; height:20px; padding:0; text-align:center; vertical-align:middle; font-family:Arial, Helvetica, sans-serif; font-size:12px; line-height:20px; font-weight:bold;">
+                  <a href="${escapeHtml(linkedinUrl)}" target="_blank" title="LinkedIn" style="display:block; width:20px; height:20px; color:${COLOURS.stormSlate}; text-decoration:none;">in</a>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>`
+        : "";
+
+      return `<table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse; font-family:Arial, Helvetica, sans-serif; color:${textColour}; font-size:12px; line-height:16px; text-align:left;">
+  <tr>
+    <td style="padding:0; text-align:left;">
+      ${nameBlock ? `${nameBlock}<br><br>` : ""}
+      <img src="${wordmarkUrl}" alt="AI Terrain" width="190" style="display:block; width:190px; max-width:190px; height:auto; border:0; margin:0 0 16px 0;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse:collapse; font-family:Arial, Helvetica, sans-serif; color:${textColour}; font-size:12px; line-height:16px; text-align:left;">
+        ${emailRow}
+        <tr>
+          <td style="${labelStyle}">W:</td>
+          <td style="${valueStyle}"><a href="${BRAND.websiteUrl}" target="_blank" style="color:${linkColour}; text-decoration:underline;">${BRAND.websiteDisplay}</a></td>
+        </tr>
+        ${meetingRow}
+        ${linkedinRow}
+      </table>
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="620" style="border-collapse:collapse; width:620px; max-width:620px; margin:0;">
+        <tr>
+          <td style="${disclaimerStyle}">
+            This email and any attachments may contain confidential or sensitive information and are intended solely for the named recipient(s). If you have received this email in error, please notify the sender immediately, delete it from your systems and do not copy or disclose its contents. Please handle any personal or commercially sensitive information in this email securely and in line with your organisation's security policies. For more information about how we handle personal data, please see our <a href="${BRAND.privacyUrl}" target="_blank" style="color:${linkColour}; text-decoration:underline;">Privacy Policy</a>.<br><br>
+            Perform Partners Ltd. Registered in England. Company No: 11606816. Registered office: Platform, New Station St, Leeds, LS1 4JB. VAT number: 309020543.
+          </td>
+        </tr>
+      </table>
+    </td>
+  </tr>
+</table>`;
+    }
+
+    function buildPlainText() {
+      const formData = getFormData();
+      const lines = [];
+      const meetingUrl = normaliseHttpUrl(formData.meetingLink);
+      const linkedinUrl = normaliseLinkedInUrl(formData.linkedinProfile);
+
+      if (formData.fullName) lines.push(formData.fullName);
+      if (formData.jobTitle) lines.push(formData.jobTitle);
+      lines.push("AI Terrain");
+      if (formData.email) lines.push(`E: ${formData.email}`);
+      lines.push(`W: ${BRAND.websiteDisplay}`);
+      if (meetingUrl) lines.push(`Book a meeting: ${meetingUrl}`);
+      if (linkedinUrl) lines.push(`LinkedIn: ${linkedinUrl}`);
+      lines.push("");
+      lines.push("This email and any attachments may contain confidential or sensitive information and are intended solely for the named recipient(s). If you have received this email in error, please notify the sender immediately, delete it from your systems and do not copy or disclose its contents. Please handle any personal or commercially sensitive information in this email securely and in line with your organisation's security policies. For more information about how we handle personal data, please see our Privacy Policy: https://ai-terrain.ai/privacy-policy.");
+      lines.push("");
+      lines.push("Perform Partners Ltd. Registered in England. Company No: 11606816. Registered office: Platform, New Station St, Leeds, LS1 4JB. VAT number: 309020543.");
+      return lines.join("\n");
+    }
+
+    function setStatus(message, isError = false) {
+      elements.status.textContent = message;
+      elements.status.classList.toggle("error", isError);
+    }
+
+    function generateSignature(showStatus = true) {
+      const signatureHtml = buildSignatureHtml({ dark: isPreviewDarkMode() });
+      const formData = getFormData();
+      const invalidMeeting = formData.meetingLink && !normaliseHttpUrl(formData.meetingLink);
+      const invalidLinkedIn = formData.linkedinProfile && !normaliseLinkedInUrl(formData.linkedinProfile);
+
+      elements.output.value = signatureHtml;
+      elements.previewWindow.innerHTML = signatureHtml;
+      saveForm();
+
+      if (invalidMeeting && invalidLinkedIn) {
+        setStatus("Meeting and LinkedIn links were not included because they are not valid URLs.", true);
+      } else if (invalidMeeting) {
+        setStatus("Meeting link was not included because it is not a valid URL.", true);
+      } else if (invalidLinkedIn) {
+        setStatus("LinkedIn icon was not included because the profile URL is not a valid LinkedIn URL.", true);
+      } else if (showStatus) {
+        setStatus("Signature generated.");
+      }
+
+      return signatureHtml;
+    }
+
+    async function copySignature() {
+      const html = generateSignature(false);
+      const plainText = buildPlainText();
+
+      try {
+        if (window.ClipboardItem && navigator.clipboard && navigator.clipboard.write) {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              "text/html": new Blob([html], { type: "text/html" }),
+              "text/plain": new Blob([plainText], { type: "text/plain" })
+            })
+          ]);
+          setStatus("Signature copied.");
+          return;
+        }
+      } catch (error) {
+        // Fall back to copying the HTML code below.
+      }
+
+      await copyHtmlCode("Signature HTML copied.");
+    }
+
+    async function copyHtmlCode(successMessage = "HTML copied.") {
+      generateSignature(false);
+      elements.output.focus();
+      elements.output.select();
+      elements.output.setSelectionRange(0, elements.output.value.length);
+
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(elements.output.value);
+        } else {
+          document.execCommand("copy");
+        }
+        setStatus(successMessage);
+      } catch (error) {
+        setStatus("Copy failed. Select the HTML and copy it manually.", true);
+      }
+    }
+
+    function downloadHtml() {
+      const html = generateSignature(false);
+      const blob = new Blob([html], { type: "text/html" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "ai-terrain-email-signature.html";
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(link.href);
+      setStatus("HTML file downloaded.");
+    }
+
+    function clearFields() {
+      FORM_IDS.forEach((id) => {
+        if (elements[id].type === "checkbox") {
+          elements[id].checked = true;
+        } else {
+          elements[id].value = "";
+        }
+      });
+      localStorage.removeItem(STORAGE_KEY);
+      generateSignature(false);
+      setStatus("Fields cleared.");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      FORM_IDS.concat(["output", "previewWindow", "status"]).forEach((id) => {
+        elements[id] = document.getElementById(id);
+      });
+
+      if (localStorage.getItem("aiTerrainDarkMode") === "true") {
+        document.body.classList.add("dark-mode");
+      }
+      updateAppBrandMark();
+
+      loadForm();
+      generateSignature(false);
+
+      document.getElementById("signatureForm").addEventListener("submit", (event) => {
+        event.preventDefault();
+        generateSignature();
+      });
+
+      FORM_IDS.forEach((id) => {
+        elements[id].addEventListener("input", () => generateSignature(false));
+        elements[id].addEventListener("change", () => generateSignature(false));
+      });
+
+      document.getElementById("darkModeButton").addEventListener("click", () => {
+        const isDark = document.body.classList.toggle("dark-mode");
+        localStorage.setItem("aiTerrainDarkMode", String(isDark));
+        updateAppBrandMark();
+      });
+
+      document.getElementById("previewModeButton").addEventListener("click", () => {
+        elements.previewWindow.classList.toggle("preview-dark");
+        generateSignature(false);
+      });
+
+      document.getElementById("copySignatureButton").addEventListener("click", copySignature);
+      document.getElementById("copyHtmlButton").addEventListener("click", () => copyHtmlCode());
+      document.getElementById("downloadButton").addEventListener("click", downloadHtml);
+      document.getElementById("clearButton").addEventListener("click", clearFields);
+    });
+  </script>
+</body>
+</html>
